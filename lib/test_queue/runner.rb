@@ -7,6 +7,7 @@ module TestQueue
     attr_accessor :pid, :status, :output, :stats, :num, :host
     attr_accessor :start_time, :end_time
     attr_accessor :summary, :failure_output
+    attr_accessor :dot_test_queue
 
     def initialize(pid, num)
       @pid = pid
@@ -58,11 +59,13 @@ module TestQueue
 
       @run_token = ENV['TEST_QUEUE_RELAY_TOKEN'] || SecureRandom.hex(8)
 
-      FileUtils.mkdir_p(".test-queue/run")
+      @dot_test_queue = "#{Dir.pwd}/.test-queue"
+
+      FileUtils.mkdir_p("#{@dot_test_queue}/run")
       @socket =
         socket ||
         ENV['TEST_QUEUE_SOCKET'] ||
-        File.expand_path(".test-queue/run/#{$$}_#{object_id}.sock")
+        "#{@dot_test_queue}/run/#{$$}_#{object_id}.sock"
 
       @relay =
         relay ||
@@ -146,7 +149,7 @@ module TestQueue
 
     def stats_file
       ENV['TEST_QUEUE_STATS'] ||
-      '.test-queue/stats.dump'
+      "#{@dot_test_queue}/stats.dump"
     end
 
     def execute_sequential
@@ -238,8 +241,8 @@ module TestQueue
     def after_fork_internal(num, iterator)
       srand
 
-      FileUtils.mkdir_p(".test-queue/output")
-      output = File.open(".test-queue/output/#{$$}", 'w')
+      FileUtils.mkdir_p("#{@dot_test_queue}/output")
+      output = File.open("#{@dot_test_queue}/output/#{$$}", 'w')
 
       $stdout.reopen(output)
       $stderr.reopen($stdout)
@@ -293,12 +296,12 @@ module TestQueue
         worker.status = $?
         worker.end_time = Time.now
 
-        if File.exists?(file = ".test-queue/output/#{pid}")
+        if File.exists?(file = "#{@dot_test_queue}/output/#{pid}")
           worker.output = IO.binread(file)
           FileUtils.rm(file)
         end
 
-        if File.exists?(file = ".test-queue/stats/#{pid}")
+        if File.exists?(file = "#{@dot_test_queue}/stats/#{pid}")
           worker.stats = Marshal.load(IO.binread(file))
           FileUtils.rm(file)
         end

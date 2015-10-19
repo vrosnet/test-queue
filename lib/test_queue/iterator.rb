@@ -47,8 +47,8 @@ module TestQueue
     rescue Errno::ENOENT, Errno::ECONNRESET, Errno::ECONNREFUSED
     ensure
       @done = caller.first
-      FileUtils.mkdir_p(".test-queue/stats")
-      File.open(".test-queue/stats/#{$$}", "wb") do |f|
+      FileUtils.mkdir_p("#{Dir.pwd}/.test-queue/stats")
+      File.open("#{Dir.pwd}/.test-queue/stats/#{$$}", "wb") do |f|
         f.write Marshal.dump(@stats)
       end
     end
