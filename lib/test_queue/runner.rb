@@ -62,7 +62,7 @@ module TestQueue
       @socket =
         socket ||
         ENV['TEST_QUEUE_SOCKET'] ||
-        ".test-queue/run/#{$$}_#{object_id}.sock"
+        File.expand_path(".test-queue/run/#{$$}_#{object_id}.sock")
 
       @relay =
         relay ||
