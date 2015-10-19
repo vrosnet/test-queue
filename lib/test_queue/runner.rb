@@ -58,10 +58,11 @@ module TestQueue
 
       @run_token = ENV['TEST_QUEUE_RELAY_TOKEN'] || SecureRandom.hex(8)
 
+      FileUtils.mkdir_p(".test-queue/run")
       @socket =
         socket ||
         ENV['TEST_QUEUE_SOCKET'] ||
-        "/tmp/test_queue_#{$$}_#{object_id}.sock"
+        ".test-queue/run/#{$$}_#{object_id}.sock"
 
       @relay =
         relay ||
@@ -145,7 +146,7 @@ module TestQueue
 
     def stats_file
       ENV['TEST_QUEUE_STATS'] ||
-      '.test_queue_stats'
+      '.test-queue/stats.dump'
     end
 
     def execute_sequential
@@ -237,7 +238,8 @@ module TestQueue
     def after_fork_internal(num, iterator)
       srand
 
-      output = File.open("/tmp/test_queue_worker_#{$$}_output", 'w')
+      FileUtils.mkdir_p(".test-queue/output")
+      output = File.open(".test-queue/output/#{$$}", 'w')
 
       $stdout.reopen(output)
       $stderr.reopen($stdout)
@@ -291,12 +293,12 @@ module TestQueue
         worker.status = $?
         worker.end_time = Time.now
 
-        if File.exists?(file = "/tmp/test_queue_worker_#{pid}_output")
+        if File.exists?(file = ".test-queue/output/#{pid}")
           worker.output = IO.binread(file)
           FileUtils.rm(file)
         end
 
-        if File.exists?(file = "/tmp/test_queue_worker_#{pid}_stats")
+        if File.exists?(file = ".test-queue/stats/#{pid}")
           worker.stats = Marshal.load(IO.binread(file))
           FileUtils.rm(file)
         end

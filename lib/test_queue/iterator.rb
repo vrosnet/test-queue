@@ -1,3 +1,5 @@
+require "fileutils"
+
 module TestQueue
   class Iterator
     attr_reader :stats, :sock
@@ -45,7 +47,8 @@ module TestQueue
     rescue Errno::ENOENT, Errno::ECONNRESET, Errno::ECONNREFUSED
     ensure
       @done = caller.first
-      File.open("/tmp/test_queue_worker_#{$$}_stats", "wb") do |f|
+      FileUtils.mkdir_p(".test-queue/stats")
+      File.open(".test-queue/stats/#{$$}", "wb") do |f|
         f.write Marshal.dump(@stats)
       end
     end

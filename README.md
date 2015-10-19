@@ -28,9 +28,9 @@ the workload and relay results back to a central master.
 
 - `TEST_QUEUE_WORKERS`: number of workers to use per master (default: all available cores)
 - `TEST_QUEUE_VERBOSE`: show results as they are available (default: `0`)
-- `TEST_QUEUE_SOCKET`: unix socket `path` (or tcp `address:port` pair) used for communication (default: `/tmp/test_queue_XXXXX.sock`)
+- `TEST_QUEUE_SOCKET`: unix socket `path` (or tcp `address:port` pair) used for communication (default: `.test-queue/run/XXXX.sock`)
 - `TEST_QUEUE_RELAY`: relay results back to a central master, specified as tcp `address:port`
-- `TEST_QUEUE_STATS`: `path` to cache build stats in-build CI runs (default: `.test_queue_stats`)
+- `TEST_QUEUE_STATS`: `path` to cache build stats in-build CI runs (default: `.test-queue/stats.dump`)
 - `TEST_QUEUE_FORCE`: comma separated list of suites to run
 - `TEST_QUEUE_RELAY_TIMEOUT`: when using remote workers, the amount of time a worker will try to reconnect to start work
 - `TEST_QUEUE_RELAY_TOKEN`: when using remote workers, this must be the same on both workers and the server for remote workers to run tests.
