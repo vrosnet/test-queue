@@ -56,8 +56,10 @@ module TestQueue
     def connect_to_master(cmd)
       sock =
         if @tcp_address
+          puts "Connecting to master at tcp://#{@tcp_address}:#{@tcp_port}"
           TCPSocket.new(@tcp_address, @tcp_port)
         else
+          puts "Connecting to master at sock: #{@sock}"
           UNIXSocket.new(@sock)
         end
       sock.puts(cmd)
